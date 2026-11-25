@@ -1,0 +1,7 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pitchcheck",
+  "compatibility_date": "2026-11-23",
+  "assets": { "directory": "." },
+  "routes": [{ "pattern": "pitchcheck.prismadatorum.ca", "custom_domain": true }]
+}

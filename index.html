@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Pitch Deck Check</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1c1f24;--mu:#5b6270;--li:#d9dce1;--card:#fff;--ok:#1d6b3a;--part:#8a5a00;--no:#a3241b;--chk:#2c4f8c;--acc:#2c4f8c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--fg:#e9ebee;--mu:#a2a9b4;--li:#343943;--card:#1c1f25;--ok:#6fcf8e;--part:#f2b84b;--no:#ff8a80;--chk:#8fb3ff;--acc:#8fb3ff}}
+:root[data-theme="dark"]{--bg:#14161a;--fg:#e9ebee;--mu:#a2a9b4;--li:#343943;--card:#1c1f25;--ok:#6fcf8e;--part:#f2b84b;--no:#ff8a80;--chk:#8fb3ff;--acc:#8fb3ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:18px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.7rem;margin:.2em 0}h2{font-size:1.2rem;margin:1.8em 0 .5em}
+.lead{color:var(--mu);max-width:60ch}
+.box{background:var(--card);border:1px solid var(--li);border-radius:12px;padding:16px 18px;margin:14px 0}
+.privacy{border-left:5px solid var(--ok)}
+label.drop{display:block;border:2px dashed var(--li);border-radius:12px;padding:28px;text-align:center;cursor:pointer}
+label.drop:focus-within,label.drop:hover{border-color:var(--acc)}
+input[type=file]{font-size:1rem}
+table{width:100%;border-collapse:collapse;font-size:1rem}
+th,td{text-align:left;vertical-align:top;border-bottom:1px solid var(--li);padding:8px 6px}
+.v{font-weight:700;white-space:nowrap}
+.v.fits{color:var(--ok)}.v.part{color:var(--part)}.v.no{color:var(--no)}.v.chk{color:var(--chk)}
+.where{color:var(--mu);font-size:.92rem}
+.notes{white-space:pre-wrap;font-size:1rem;color:var(--fg);background:var(--bg);border-radius:8px;padding:10px}
+.crit label{display:flex;gap:10px;align-items:flex-start;margin:8px 0}
+.crit input{width:22px;height:22px;margin-top:3px}
+button{font:inherit;padding:10px 16px;border-radius:8px;border:1px solid var(--acc);background:var(--acc);color:var(--bg);cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.small{font-size:.95rem;color:var(--mu)}
+.hidden{display:none}
+.tabs{display:flex;gap:8px;margin:16px 0 4px;border-bottom:1px solid var(--li)}
+.tabs button{background:none;color:var(--fg);border:none;border-bottom:3px solid transparent;border-radius:0;padding:10px 14px}
+.tabs button[aria-selected="true"]{border-bottom-color:var(--acc);font-weight:700}
+td code,li code{font-size:.9rem}
+@media (max-width:640px){table{font-size:.9rem}th,td{padding:6px 4px}}
+</style>
+</head>
+<body>
+<main>
+<h1>Pitch Deck Check</h1>
+<p class="lead">Checks a PowerPoint deck against the published rules of the Public Service Data/AI Challenge pitch training (November 19, 2026). It situates the deck against those rules; it does not score or rank it. Judges decide.</p>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+<button role="tab" id="t-check" aria-controls="p-check" aria-selected="true">Check a deck</button>
+<button role="tab" id="t-method" aria-controls="p-method" aria-selected="false">Methodology</button>
+</nav>
+<div id="p-check" role="tabpanel" aria-labelledby="t-check">
+
+<div class="box privacy"><b>Your file never leaves your computer.</b> It is read in this browser tab only. Nothing is uploaded, stored or sent anywhere. No artificial intelligence is used: every check is a fixed rule you can read below.</div>
+
+<label class="drop" for="f"><b>Choose a .pptx file</b><br><span class="small">or drop it here</span><br><br><input id="f" type="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"></label>
+<p id="status" class="small" role="status" aria-live="polite"></p>
+
+<section id="out" class="hidden">
+<h2>Automatic checks</h2>
+<p class="small">Each verdict is written in words, never shown by colour alone. <b>Fits</b>, <b>Partly</b> and <b>Does not fit</b> are measured from the file; <b>To check</b> needs a person.</p>
+<table><thead><tr><th>Rule</th><th>Verdict</th><th>What the file shows</th></tr></thead><tbody id="res"></tbody></table>
+
+<h2>What is said in the first minute</h2>
+<p class="small">Rule: in the first 60 seconds, say what the problem is and why it matters now, and the risk of doing nothing.</p>
+<div id="first"></div>
+
+<h2>Self-assessment against the six judging criteria</h2>
+<p class="small">Tick only what the deck shows clearly. This stays in your browser.</p>
+<div class="box crit" id="crit"></div>
+
+<p><button id="dl" type="button">Save this report (.md)</button></p>
+</section>
+
+<h2>Rules checked, and their source</h2>
+<ul class="small">
+<li>Text 18 pt or larger; high contrast; never colour alone; clean slides. (Accessibility considerations)</li>
+<li>Avoid jargon and acronyms, on the slides and in the speech; simple slides, details in annexes. (Key considerations)</li>
+<li>Do not include an outline; use the full 10 minutes; first 60 seconds: the problem and why it matters. (Pitch structure)</li>
+<li>Name challenges and obstacles; data access; tools; users; who has been consulted; next steps and risks. (What the judges look for)</li>
+<li>Six judging criteria. (Judging criteria)</li>
+</ul>
+<p class="small">Source: Pitch Training for the Public Service Data/AI Challenge, November 19, 2026. This page is an independent aid, not an official tool of the challenge. Limits: font sizes inherited from a slide layout cannot be measured from the file and are marked “To check”; contrast and colour must be checked on screen. See the Methodology tab.</p>
+</div>
+
+<div id="p-method" role="tabpanel" aria-labelledby="t-method" hidden>
+<h2>What this tool is for</h2>
+<p>To let each team check its own deck against the published rules, and improve it, without waiting for an outside opinion. It is meant to be <b>good enough to be useful</b>, not perfect. It is a mirror, not a judge.</p>
+
+<h2>Execution rules: what the code does</h2>
+<table><thead><tr><th>Id</th><th>Rule</th><th>How it is computed</th><th>Verdict logic</th></tr></thead><tbody>
+<tr><td>A1</td><td>Text 18 pt or larger</td><td>Reads the size of every text run on every slide (<code>a:rPr/@sz</code>). Sizes inherited from a layout or master are not resolved.</td><td>Any run below 18 pt: Does not fit. Only inherited sizes: To check.</td></tr>
+<tr><td>A2</td><td>Images have alternative text</td><td>The description field of each picture.</td><td>Any picture without one: Partly.</td></tr>
+<tr><td>A3</td><td>Never colour alone; high contrast</td><td>Not computed.</td><td>Always To check.</td></tr>
+<tr><td>D1</td><td>No acronyms</td><td>Words of two or more capitals, in lines that contain lower-case text (slides and speaker notes). Lines written entirely in capitals are treated as headings and skipped. A short allow-list (AI, US, OK…).</td><td>Any found: Does not fit.</td></tr>
+<tr><td>S1</td><td>No outline slide</td><td>Slide titles such as Agenda, Outline, Overview, Contents, Plan, Sommaire.</td><td>Any found: Does not fit.</td></tr>
+<tr><td>P1</td><td>No placeholders left</td><td>Text in square brackets (up to 40 characters), three or more underscores, TBD, TODO, XX, lorem ipsum. Speaker cues are skipped: timings, and brackets starting with Pause, Click, Keywords, Sources, Note, Cue, Transition.</td><td>Any found: Does not fit.</td></tr>
+<tr><td>L1</td><td>Links hosted by the team or department</td><td>External hyperlinks and web addresses written in the text. Personal or third-party hosts are flagged (chat assistants, personal drives, localhost).</td><td>Personal host: Partly. Other links: To check.</td></tr>
+<tr><td>T1</td><td>Use the full 10 minutes</td><td>Timing marks <code>m:ss – m:ss</code> in the speaker notes; the latest end time up to 15 minutes.</td><td>9 to 10 min: Fits. Under 9: Partly. Over 10: Does not fit. No marks: To check.</td></tr>
+<tr><td>T2</td><td>First 60 seconds: the problem and why it matters</td><td>Shows the notes of the slides spoken in the first minute.</td><td>Always To check.</td></tr>
+<tr><td>S2</td><td>Simple, uncluttered slides</td><td>Words of slide text (notes excluded).</td><td>Any slide over 70 words: Partly.</td></tr>
+<tr><td>S3</td><td>Structure, including risks</td><td>Looks for words about risks, users, consultation, next steps and cost, anywhere in the deck.</td><td>Any part missing: Partly. All present: To check.</td></tr>
+</tbody></table>
+
+<h2>Reading rules: how to use the verdicts</h2>
+<ul>
+<li><b>A verdict is a signal, not a mark.</b> “Does not fit” means the file shows something the rule asks you to avoid. Read the detail, then decide.</li>
+<li><b>“Fits” is not a guarantee.</b> It means the code found nothing, not that a judge will agree. Some things are invisible to the code.</li>
+<li><b>“To check” is a task for a person</b>, best done on the projector you will use.</li>
+<li><b>False positives exist.</b> A word in capitals is not always an acronym; a bracket is not always a placeholder. Dismiss them knowingly.</li>
+<li><b>The self-assessment is yours.</b> Ticking a box records what you believe the deck shows; it is not checked by the code.</li>
+<li><b>No score, no ranking.</b> The verdicts are never added up. Two decks cannot be compared with this tool.</li>
+<li><b>The rules are the organizers’.</b> If this page and the organizers ever differ, the organizers are right.</li>
+</ul>
+
+<h2>Honest limits</h2>
+<ul>
+<li><b>Not validated on a corpus.</b> The checks were tested on two real pitch decks and the organizers’ training deck, and compared with a manual review of one of them. They were <b>not</b> tested on a set of, say, a hundred decks with known defects and known clean ones. There is therefore no measured rate of false alarms or missed problems.</li>
+<li><b>Known blind spots.</b>
+ <ul>
+ <li>Font sizes inherited from a layout are not measured.</li>
+ <li>Text inside images, charts, SmartArt and embedded objects is not read.</li>
+ <li>Contrast, colour use, legibility from the back of the room and the quality of the story are not assessed.</li>
+ <li>The spoken script is known only through the speaker notes; what is actually said may differ.</li>
+ <li>Links are not opened, so a broken link is not detected.</li>
+ <li>Acronyms are recognized by shape only, not checked against a definition given aloud.</li>
+ </ul></li>
+<li><b>Thresholds are choices.</b> 70 words per slide and 9 minutes as “using the full time” are our reading of the guidance, not numbers given by the organizers.</li>
+<li><b>Files that may break it.</b> Very old or unusual files, password-protected files and files saved by other tools than PowerPoint may fail to open or give partial results.</li>
+<li><b>English first.</b> The patterns are written for English decks; French decks are only partly covered (outline titles, some cues).</li>
+</ul>
+
+<h2>Transparency and ownership</h2>
+<p>The code is open source under the MIT licence. Every rule is readable in <code>analyse.js</code>. Each team may run its own copy, offline, and adapt it. Nobody hosts your file, and nobody maintains a service for you. Improvements are welcome, and should keep the rule, its source and its limits visible.</p>
+<p class="small">Version 0.1, November 25, 2026.</p>
+</div>
+</main>
+
+<script src="jszip.min.js"></script>
+<script src="analyse.js"></script>
+<script>
+const CRIT=[
+ ["Improves the experience of Canadians or public servants","who the user is, and how they use it"],
+ ["Obstacles considered and addressed","risks named, with how each is managed"],
+ ["Replicable and scalable, ideally across departments","what it takes to reuse elsewhere"],
+ ["Impact and return on investment","a cost, a benefit, a measure"],
+ ["Innovative use of data and technology","what is new, and why it works"],
+ ["Aligned with federal priorities and data ethics","which commitments, which safeguards"],
+ ["Data availability and access","which data, and whether you can get it"],
+ ["Who has been consulted","roles and numbers, not only intentions"]];
+for(const b of document.querySelectorAll('[role=tab]'))b.addEventListener('click',()=>{for(const x of document.querySelectorAll('[role=tab]')){const on=x===b;x.setAttribute('aria-selected',on);document.getElementById(x.getAttribute('aria-controls')).hidden=!on;}});
+const cls={"Fits":"fits","Partly":"part","Does not fit":"no","To check":"chk"};
+const ico={"Fits":"✓","Partly":"◐","Does not fit":"✗","To check":"?"};
+let last=null,fileName="";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+document.getElementById("crit").innerHTML=CRIT.map((c,i)=>`<label><input type="checkbox" id="c${i}"><span><b>${esc(c[0])}</b><br><span class="small">${esc(c[1])}</span></span></label>`).join("");
+const drop=document.querySelector("label.drop");
+["dragover","drop"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();if(e==="drop"&&ev.dataTransfer.files[0])run(ev.dataTransfer.files[0]);}));
+document.getElementById("f").addEventListener("change",e=>e.target.files[0]&&run(e.target.files[0]));
+async function run(file){
+  const st=document.getElementById("status");fileName=file.name;st.textContent="Reading "+file.name+" in your browser…";
+  try{
+    if(typeof JSZip==="undefined") throw new Error("the reader library did not load; check your connection and reload");
+    const zip=await JSZip.loadAsync(file);
+    const r=await PitchCheck.analyse(zip,s=>new DOMParser().parseFromString(s,"application/xml"));
+    last=r;render(r);st.textContent=`${file.name}: ${r.slides.length} slides read. Nothing was uploaded.`;
+  }catch(e){st.textContent="Could not read this file: "+e.message;}
+}
+function render(r){
+  document.getElementById("res").innerHTML=r.results.map(x=>`<tr><td>${esc(x.rule)}</td><td class="v ${cls[x.verdict]}">${ico[x.verdict]} ${esc(x.verdict)}</td><td>${esc(x.detail)}${x.where?`<div class="where">${esc(x.where)}</div>`:""}</td></tr>`).join("");
+  document.getElementById("first").innerHTML=r.firstSlides.map(n=>{const s=r.slides[n-1];return s?`<div class="box"><b>Slide ${n}: ${esc(s.title)}</b><div class="notes">${esc(s.notes||"(no speaker notes)")}</div></div>`:""}).join("");
+  document.getElementById("out").classList.remove("hidden");
+}
+document.getElementById("dl").addEventListener("click",()=>{
+  if(!last)return;
+  const L=[`# Pitch deck check: ${fileName}`,``,`Rules: Pitch Training for the Public Service Data/AI Challenge, Nov. 19, 2026. Read in the browser; nothing uploaded; no AI.`,``,`| Rule | Verdict | What the file shows |`,`|---|---|---|`,
+   ...last.results.map(x=>`| ${x.rule} | ${x.verdict} | ${x.detail.replace(/\|/g,"/")}${x.where?" ("+x.where.replace(/\|/g,"/")+")":""} |`),``,`## Self-assessment`,
+   ...CRIT.map((c,i)=>`- [${document.getElementById("c"+i).checked?"x":" "}] ${c[0]}`)];
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([L.join("\n")],{type:"text/markdown"}));a.download=fileName.replace(/\.pptx$/i,"")+"_check.md";a.click();
+});
+</script>
+</body>
+</html>
