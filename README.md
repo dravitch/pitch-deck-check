@@ -7,7 +7,7 @@ A small, open-source page that checks a PowerPoint deck against the published ru
 - **Situates, does not judge.** It says which rule a deck meets, partly meets or does not meet. The judges decide.
 
 ## Use it
-Online: https://pitchcheck.prismadatorum.ca (the file is still read in your browser only).
+Online: https://pitchcheck.prismadatorum.ca · Source: https://github.com/dravitch/pitch-deck-check (the file is still read in your browser only).
 
 1. Download or clone this repository.
 2. Open `index.html` in a browser. It works offline: the ZIP reader (JSZip 3.10.1, MIT) is included.
